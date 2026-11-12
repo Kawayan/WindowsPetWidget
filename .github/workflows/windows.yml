@@ -13,6 +13,8 @@ permissions:
 jobs:
   build:
     runs-on: windows-2025
+    outputs:
+      zip_name: ${{ steps.version.outputs.zip_name }}
     steps:
       - uses: actions/checkout@v7
         with:
@@ -20,12 +22,25 @@ jobs:
       - uses: actions/setup-dotnet@v6
         with:
           global-json-file: global.json
+      - name: Read project version and validate release tag
+        id: version
+        shell: pwsh
+        run: |
+          $version = dotnet msbuild WindowsPetWidget/WindowsPetWidget.csproj -nologo -getProperty:Version -p:Configuration=Release
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          if (-not $version) { throw 'MSBuild did not return a project version.' }
+
+          $expectedTag = "v$version"
+          if ($env:GITHUB_REF_TYPE -eq 'tag' -and $env:GITHUB_REF_NAME -cne $expectedTag) {
+            throw "Release tag '$env:GITHUB_REF_NAME' does not match project version. Expected '$expectedTag'."
+          }
+          "zip_name=WindowsPetWidget-$expectedTag-win-x64.zip" >> $env:GITHUB_OUTPUT
       - name: Build solution
         run: dotnet build WindowsPetWidget.slnx --configuration Release
       - name: Package Windows x64
         shell: pwsh
         env:
-          PACKAGE_VERSION: ${{ github.ref_type == 'tag' && github.ref_name || github.sha }}
+          ZIP_NAME: ${{ steps.version.outputs.zip_name }}
         run: |
           $package = Join-Path $env:RUNNER_TEMP 'WindowsPetWidget'
           dotnet publish WindowsPetWidget/WindowsPetWidget.csproj --configuration Release --runtime win-x64 --output $package -p:PublishProfile=FolderProfile
@@ -33,7 +48,7 @@ jobs:
 
           Copy-Item -LiteralPath LICENSE -Destination $package
           $files = @('WindowsPetWidget.exe', 'Assets', 'LICENSE') | ForEach-Object { Join-Path $package $_ }
-          $zip = "WindowsPetWidget-$env:PACKAGE_VERSION-win-x64.zip"
+          $zip = $env:ZIP_NAME
           Compress-Archive -LiteralPath $files -DestinationPath $zip
 
           $archive = [IO.Compression.ZipFile]::OpenRead((Join-Path $PWD.Path $zip))
@@ -47,7 +62,7 @@ jobs:
       - uses: actions/upload-artifact@v4
         with:
           name: WindowsPetWidget-win-x64
-          path: WindowsPetWidget-*-win-x64.zip
+          path: ${{ steps.version.outputs.zip_name }}
           if-no-files-found: error
 
   release:
@@ -65,7 +80,8 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           GH_REPO: ${{ github.repository }}
           RELEASE_TAG: ${{ github.ref_name }}
+          ZIP_NAME: ${{ needs.build.outputs.zip_name }}
         run: |
-          gh release create "$RELEASE_TAG" "WindowsPetWidget-${RELEASE_TAG}-win-x64.zip" \
+          gh release create "$RELEASE_TAG" "$ZIP_NAME" \
             --verify-tag --generate-notes --title "WindowsPetWidget $RELEASE_TAG" \
             --notes 'Windows x64 用の ZIP をすべて展開し、WindowsPetWidget.exe を起動してください。Assets フォルダーは EXE と同じ場所に置いてください。'
