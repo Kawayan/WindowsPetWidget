@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="WindowsPetWidget/WindowsPetWidget.csproj" />
+  <Project Path="tools/SpriteSheetGif/SpriteSheetGif.csproj" />
+</Solution>

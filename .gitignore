@@ -1,0 +1,13 @@
+# .NET build outputs
+**/bin/
+**/obj/
+
+artifacts/
+
+# Visual Studio user settings
+.vs/
+*.user
+*.suo
+
+# Local application settings (when copied into the repository)
+settings.json

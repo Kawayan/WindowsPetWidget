@@ -1,0 +1,81 @@
+{
+  "imagePath": "spritesheet.png",
+  "columns": 8,
+  "rows": 9,
+  "frameWidth": 192,
+  "frameHeight": 208,
+  "idleDelayMilliseconds": 5000,
+  "idleAnimation": "idle",
+  "dragRightAnimation": "running-right",
+  "dragLeftAnimation": "running-left",
+  "dragUpAnimation": "idle",
+  "dragDownAnimation": "idle",
+  "dragUpRightAnimation": "running-right",
+  "dragDownRightAnimation": "running-right",
+  "dragUpLeftAnimation": "running-left",
+  "dragDownLeftAnimation": "running-left",
+  "ambientSequence": [
+    "waving",
+    "jumping",
+    "failed",
+    "waiting",
+    "working",
+    "review"
+  ],
+  "animations": [
+    {
+      "id": "idle",
+      "row": 0,
+      "startColumn": 0,
+      "frameDurations": [280, 110, 110, 140, 140, 320]
+    },
+    {
+      "id": "running-right",
+      "row": 1,
+      "startColumn": 0,
+      "frameDurations": [120, 120, 120, 120, 120, 120, 120, 220]
+    },
+    {
+      "id": "running-left",
+      "row": 2,
+      "startColumn": 0,
+      "frameDurations": [120, 120, 120, 120, 120, 120, 120, 220]
+    },
+    {
+      "id": "waving",
+      "row": 3,
+      "startColumn": 0,
+      "frameDurations": [140, 140, 140, 280]
+    },
+    {
+      "id": "jumping",
+      "row": 4,
+      "startColumn": 0,
+      "frameDurations": [140, 140, 140, 140, 280]
+    },
+    {
+      "id": "failed",
+      "row": 5,
+      "startColumn": 0,
+      "frameDurations": [140, 140, 140, 140, 140, 140, 140, 240]
+    },
+    {
+      "id": "waiting",
+      "row": 6,
+      "startColumn": 0,
+      "frameDurations": [150, 150, 150, 150, 150, 260]
+    },
+    {
+      "id": "working",
+      "row": 7,
+      "startColumn": 0,
+      "frameDurations": [120, 120, 120, 120, 120, 220]
+    },
+    {
+      "id": "review",
+      "row": 8,
+      "startColumn": 0,
+      "frameDurations": [150, 150, 150, 150, 150, 280]
+    }
+  ]
+}
